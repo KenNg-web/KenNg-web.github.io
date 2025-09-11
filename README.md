@@ -12,7 +12,7 @@
     padding:22px;
     border-radius:12px;
     box-shadow:0 8px 20px rgba(0,0,0,.12);
-    position: relative; /* Ensure the container is a positioning context for the pseudo-element */
+    position: relative;
   }
   .container::before {
     content: '';
@@ -21,12 +21,12 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: BR Logo.jpg; /* Replace with your logo URL or path */
+    background-image: BR Logo.jpg;
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    opacity: 0.3; /* Adjust for desired transparency (0.0 fully transparent, 1.0 fully opaque) */
-    z-index: -1; /* Place behind content */
+    opacity: 0.3;
+    z-index: -1;
   }
   h1{color:#003366;margin-top:0}
   .btn{background:#007bff;color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer}
@@ -99,8 +99,7 @@ function parseNumStr(s){
   return Number(String(s).replace(/,/g,'') || 0) || 0;
 }
 
-/* Attach focus/blur behavior: remove commas on focus, format on blur.
-   Also support Enter key to trigger calculate for that calculator. */
+/* Attach focus/blur behavior: remove commas on focus, keep empty on blur if no input */
 function attachSmartFormatting(el){
   if(!el) return;
   el.addEventListener('focus', (e)=>{
@@ -109,8 +108,12 @@ function attachSmartFormatting(el){
   });
   el.addEventListener('blur', (e)=>{
     const raw = e.target.value ? e.target.value.toString().replace(/,/g,'') : '';
-    const num = parseFloat(raw) || 0;
-    e.target.value = fmt(num);
+    if(raw === ''){
+      e.target.value = '';
+    } else {
+      const num = parseFloat(raw) || 0;
+      e.target.value = fmt(num);
+    }
   });
   el.addEventListener('keydown', (e)=>{
     if(e.key === 'Enter'){
@@ -221,68 +224,75 @@ function renderInputs(id){
 
   if(type === 'Mortgage'){
     if(mode === 'loan'){
-      html += `<label>SNP Price (follow the purchase price, included cash back)</label><input id="snp${id}" type="text" placeholder="1,000,000.00">`;
-      html += `<label>Loan Size (RM): (base on the loan amount with bank)</label><input id="loan${id}" type="text" placeholder="1,000,000.00">`;
+      html += `<label>SNP Price </label><input id="snp${id}" type="text" placeholder="Follow The Purchase Price, Included Cash Back">`;
+      html += `<label>Loan Size (RM): </label><input id="loan${id}" type="text" placeholder="Base On The Loan Amount With Bank">`;
     } else {
-      html += `<label>Monthly Payment (RM)</label><input id="monthly${id}" type="text" placeholder="5,000.00">`;
+      html += `<label>Monthly Payment (RM)</label><input id="monthly${id}" type="text" placeholder="Follow Client Affordable Payment.">`;
     }
     html += `<div class="row">`;
-    html += `<div><label>Interest Rate (%): effective rate 3.5-4.5%pa</label><input id="rate${id}" type="text" placeholder="4.00"></div>`;
-    html += `<div><label>Tenure (Years): max 35 years or age 70</label><input id="tenure${id}" type="text" placeholder="35"></div>`;
+    html += `<div><label>Interest Rate (%): (Effective Rate) </label><input id="rate${id}" type="text" placeholder="3.5%-4.5%pa, Subject To Bank Approval And Current SBR"></div>`;
+    html += `<div><label>Tenure (Years): </label><input id="tenure${id}" type="text" placeholder="Max 35years or Age70, Whichever First."></div>`;
     html += `</div>`;
-    html += `<label>Service Fees (%): If take BackRock stock then 0% on service fees. If not Base 5%, Max 7%</label><input id="fees${id}" type="text" placeholder="5">`;
-    html += `<label>Cash Back Mode</label>
-             <select id="cashbackMode${id}" onchange="onCashbackModeChange(${id})">
-               <option value="none">None</option>
-               <option value="percent">By % of SNP</option>
-               <option value="manual">Manual RM</option>
-             </select>
-             <input id="cashback${id}" type="text" placeholder="Enter % or RM" style="margin-top:6px">`;
-    html += `<label>Legal Fees Discount (%)</label><input id="legalDiscount${id}" type="text" placeholder="0">`;
-    html += `<label><input id="includeLegal${id}" type="checkbox" checked> Include legal fees in bank deduction</label>`;
-    html += `<div class="remark">Remark: Legal fees list below is estimated. Final price based on law firm quotation.</div>`;
+    html += `<label>Service Fees (%): </label><input id="fees${id}" type="text" placeholder="If Take Property From BackRock then 0% on service fees. If not Base 5%, Max 7%">`;
+    html += `<label>Cashback (RM)</label><input id="cashback${id}" type="text" placeholder="Enter cashback amount or leave empty for default">`;
+    html += `<label>Legal Fees Discount (%)</label><input id="legalDiscount${id}" type="text" placeholder="Follow By Quotation">`;
+    html += `<label><input id="includeLegal${id}" type="checkbox"> Include legal fees in loan</label>`;
+    html += `<div class="remark">Remark: Legal Fees Estimated. Final Price Based On Law Firm Quotation.</div>`;
+    html += `<div class="remark">If Below 800k Cash back around 110k. 500k Below Cash Back around 70k. Cash Back Is Estimated, Depends On The Property Price.</div>`;
   }
 
   else if(type === 'Personal Loan'){
     if(mode === 'loan'){
-      html += `<label>Loan Size (RM): Max 200k, if more than 200k please refer to Keyman.</label><input id="loan${id}" type="text" placeholder="200,000.00">`;
+      html += `<label>Loan Size (RM): </label><input id="loan${id}" type="text" placeholder="Max 200k, If More Than 200k Please Refer To Keyman">`;
     } else {
-      html += `<label>Monthly Payment (RM)</label><input id="monthly${id}" type="text" placeholder="2,500.00">`;
+      html += `<label>Monthly Payment (RM)</label><input id="monthly${id}" type="text" placeholder="Follow Client Affordable Payment.">`;
     }
     html += `<div class="row">`;
-    html += `<div><label>Interest Rate (%): 2.89%-18%pa</label><input id="rate${id}" type="text" placeholder="10.00"></div>`;
-    html += `<div><label>Tenure (Years): 5-10</label><input id="tenure${id}" type="text" placeholder="5"></div>`;
+    html += `<div><label>Interest Rate (%): </label><input id="rate${id}" type="text" placeholder="2.89%-18%pa"></div>`;
+    html += `<div><label>Tenure (Years): </label><input id="tenure${id}" type="text" placeholder="5-10years, Base On Bank Offer."></div>`;
     html += `</div>`;
-    html += `<label>Service Fees (%): Base 14%, Max 20%</label><input id="fees${id}" type="text" placeholder="14">`;
+    html += `<label>Service Fees (%): </label><input id="fees${id}" type="text" placeholder="Base 14%, Max 20%; IMS Base 16%, Max 25% ">`;
     html += `<div class="row">`;
-    html += `<div><label>Age for Takaful</label><input id="age${id}" type="text" placeholder="35"></div>`;
+    html += `<div><label>Age for Takaful</label><input id="age${id}" type="text" placeholder="For Takaful Calculation, Base On Mortality Rate"></div>`;
     html += `<div><label>Include Takaful?</label><select id="takaful${id}"><option value="no">No</option><option value="yes">Yes</option></select></div>`;
     html += `</div>`;
-    html += `<label>Advance Payment (Months) - this will multiply by monthly and be part of bank deduction</label><input id="advance${id}" type="text" placeholder="0">`;
+    html += `<label>Advance Payment (Months) - Check With Keyman Require Or Not </label><input id="advance${id}" type="text" placeholder="0">`;
     html += `<div id="takafulRemark${id}" class="remark"></div>`;
   }
 
-  else { // P2P, Bank SME, SME IMS, Hire Purchase
+  else if(type === 'Hire Purchase'){
     if(mode === 'loan'){
-      html += `<label>Loan Size (RM)</label><input id="loan${id}" type="text" placeholder="${type==='Bank SME Loan'?'1,000,000.00':'100,000.00'}">`;
+      html += `<label>Loan Size (RM)</label><input id="loan${id}" type="text" placeholder="Min 350k">`;
     } else {
-      html += `<label>Monthly Payment (RM)</label><input id="monthly${id}" type="text" placeholder="${type==='Bank SME Loan'?'10,000.00':'5,000.00'}">`;
+      html += `<label>Monthly Payment (RM)</label><input id="monthly${id}" type="text" placeholder="Follow Client Affordable Payment.">`;
+    }
+    html += `<div class="row">`;
+    html += `<div><label>Interest Rate (%): </label><input id="rate${id}" type="text" placeholder="2.5%-7%pa, Base On Profile"></div>`;
+    html += `<div><label>Tenure (Years): </label><input id="tenure${id}" type="text" placeholder="3-9years, Subject To Approval"></div>`;
+    html += `</div>`;
+    html += `<div class="remark">Follow By Flat Rate Calculation</div><input id="fees${id}" type="hidden">`;
+    html += `<label>Cashback (RM)</label><input id="cashback${id}" type="text" placeholder="Default: 10% of loan size">`;
+    html += `<div class="remark">Cash Back Is Estimated, Depends On The Market Value.</div>`;
+    html += `<div class="remark">*Not Yet Include Insurance And Roadtax*</div>`;
+  }
+
+  else { // P2P, Bank SME, SME IMS
+    if(mode === 'loan'){
+      html += `<label>Loan Size (RM)</label><input id="loan${id}" type="text" placeholder="${type==='Bank SME Loan'?'Follow Purposal For The Max Loan Amount':'If Above 200k Refer To Keyman.'}">`;
+    } else {
+      html += `<label>Monthly Payment (RM)</label><input id="monthly${id}" type="text" placeholder="${type==='Bank SME Loan'?'Follow Client Affordable Payment.':'Follow Client Affordable Payment.'}">`;
     }
     html += `<div class="row">`;
     if(type === 'P2P'){
-      html += `<div><label>Interest Rate (%): 8%-14%pa</label><input id="rate${id}" type="text" placeholder="10.00"></div>`;
-      html += `<div><label>Tenure (Years): Max 3</label><input id="tenure${id}" type="text" placeholder="3"></div>`;
-      html += `</div><label>Service Fees (%) - Direct base 12%, Max 18%; IMS base 16%-22%</label><input id="fees${id}" type="text" placeholder="15">`;
-    } else if(type === 'Hire Purchase'){
-      html += `<div><label>Interest Rate (%): 2.5-7%pa</label><input id="rate${id}" type="text" placeholder="5.00"></div>`;
-      html += `<div><label>Tenure (Years): 3-9</label><input id="tenure${id}" type="text" placeholder="5"></div>`;
-      html += `</div><div class="remark">Service fees not applied to Hire Purchase</div><input id="fees${id}" type="hidden">`;
+      html += `<div><label>Interest Rate (%): </label><input id="rate${id}" type="text" placeholder="8%-14%pa"></div>`;
+      html += `<div><label>Tenure (Years): </label><input id="tenure${id}" type="text" placeholder=" Max 3Years"></div>`;
+      html += `</div><label>Service Fees (%) - </label><input id="fees${id}" type="text" placeholder="Direct base 12%, Max 18%; IMS base 16%-22%">`;
     } else {
-      html += `<div><label>Interest Rate (%): 5.5%-9%pa</label><input id="rate${id}" type="text" placeholder="6.50"></div>`;
-      html += `<div><label>Tenure (Years): 5-7 years</label><input id="tenure${id}" type="text" placeholder="6"></div>`;
-      html += `</div><label>Service Fees (%)</label><input id="fees${id}" type="text" placeholder="${type==='SME IMS'?'14':'6'}">`;
+      html += `<div><label>Interest Rate (%): </label><input id="rate${id}" type="text" placeholder="5.5%-9%pa, Subject To Approval."></div>`;
+      html += `<div><label>Tenure (Years): </label><input id="tenure${id}" type="text" placeholder="5-7years, Base On Bank Offer."></div>`;
+      html += `</div><label>Service Fees (%)</label><input id="fees${id}" type="text" placeholder="${type==='SME IMS'?'Base 14%, Max 20%':'>1M: Base 6%, Max 12%; <1M: Base 9%, Max 15%'}">`;
       if(type === 'SME IMS'){
-        html += `<div class="remark">Note (IMS): does not include 1.5% Trx Fees @ Credit-in and Commitment Fees RM15k</div>`;
+        html += `<div class="remark">Note (IMS): Not Include 1.5% Trx Fees @ Credit-in and Commitment Fees RM15k Required. </div>`;
       }
     }
   }
@@ -294,12 +304,6 @@ function renderInputs(id){
   inputs.forEach(el => attachSmartFormatting(el));
 }
 
-/* when user changes cashback mode show nothing special (we parse value on calculate)
-   but keep this function to allow future UI changes */
-function onCashbackModeChange(id){
-  // nothing to do here now; value read in calculate()
-}
-
 /* Scroll to calculator when clicking summary title */
 function scrollToCalculator(id){
   const calc = document.getElementById('calc'+id);
@@ -309,7 +313,7 @@ function scrollToCalculator(id){
 }
 
 /* =========================
-   Calculation logic (with mortgage cashback override)
+   Calculation logic
    ========================= */
 
 function calculate(id){
@@ -354,40 +358,43 @@ function calculate(id){
   // bank deduction, cash on hand, legal items, takaful, advance
   let bankDeduction = 0, cashOnHand = 0;
   let legalItems = null, takafulAmount = 0, advanceAmount = 0;
+  let effectiveLoan = loan;
 
   if(type === 'Mortgage'){
     const snpVal = v('snp') || loan;
-    const mot = calcStampDutyMOT(snpVal);
-    const loanStamp = calcStampDutyLoan(loan);
-    const legalSNP = calcLegalFees(snpVal);
-    const legalLoan = calcLegalFees(loan);
-    legalItems = { mot, loanStamp, legalSNP, legalLoan };
-
     const discountPerc = (v('legalDiscount') || 0) / 100;
+    const mot = calcStampDutyMOT(snpVal);
+    const legalSNP = calcLegalFees(snpVal);
+    let legalLoan = calcLegalFees(loan);
     let totalLegal = (legalSNP + legalLoan) * (1 - discountPerc);
+    const includeLegal = document.getElementById('includeLegal'+id)?.checked ?? false;
+    if(includeLegal){
+      effectiveLoan += totalLegal;
+      legalLoan = calcLegalFees(effectiveLoan);
+      totalLegal = (legalSNP + legalLoan) * (1 - discountPerc);
+    }
+    const loanStamp = calcStampDutyLoan(effectiveLoan);
+    legalItems = { mot, loanStamp, legalSNP, legalLoan };
+    bankDeduction = loanStamp; // Legal fees excluded from bank deduction
 
-    // bankDeduction base
-    bankDeduction = loan * 0.005 + (document.getElementById('includeLegal'+id)?.checked ? totalLegal : 0);
-
-    // Cashback override:
-    // If cashback mode percent -> cashbackValue = percent * SNP price (as RM)
-    // If cashback mode manual -> cashbackValue = manual RM input
-    // If cashback specified (non-zero) => Cash on Hand = cashbackValue
-    // Else fallback to loan - bankDeduction - serviceFee
-    const cbMode = document.getElementById('cashbackMode'+id)?.value || 'none';
-    const cbRaw = parseNumStr(document.getElementById('cashback'+id)?.value || 0);
+    // Cashback logic: manual input or default formula
     let cashbackValue = 0;
-    if(cbMode === 'percent' && cbRaw > 0){
-      cashbackValue = (snpVal || loan) * (cbRaw / 100);
-    } else if(cbMode === 'manual' && cbRaw > 0){
+    const cbRaw = v('cashback');
+    if(cbRaw > 0){
       cashbackValue = cbRaw;
-    }
-
-    if(cashbackValue > 0){
-      cashOnHand = cashbackValue; // override per your instruction
     } else {
-      cashOnHand = loan - bankDeduction - serviceFee;
+      if(snpVal < 500000){
+        cashbackValue = 70000;
+      } else if(snpVal < 800000){
+        cashbackValue = 110000;
+      }
     }
+    cashOnHand = cashbackValue > 0 ? cashbackValue : 0;
+
+    // Recalculate monthly based on effectiveLoan
+    const monthlyRate = ratePerc / 12;
+    if(monthlyRate === 0) monthly = effectiveLoan / nMonths;
+    else monthly = effectiveLoan * monthlyRate / (1 - Math.pow(1 + monthlyRate, -nMonths));
 
   } else if(type === 'P2P'){
     bankDeduction = ((0.015 * loan) * tenureYears) + monthly;
@@ -404,7 +411,6 @@ function calculate(id){
     let chosen = ageKeys[0];
     for(const k of ageKeys) if(k <= age) chosen = k;
     const mortRate = mortalityRates[chosen] || 0.004;
-    // Takaful = (base takaful) * tenure, where base takaful = loan * mortality rate
     if(includeTakaful){
       const baseTakaful = loan * mortRate;
       takafulAmount = baseTakaful * tenureYears;
@@ -414,14 +420,26 @@ function calculate(id){
     bankDeduction = (0.005 * loan) + takafulAmount + advanceAmount;
     cashOnHand = loan - bankDeduction - serviceFee;
     if(includeTakaful){
-      document.getElementById('takafulRemark'+id).innerText = `Takaful calculated by (loan × mortality rate) × tenure (estimated). Amount may vary.`;
+      document.getElementById('takafulRemark'+id).innerText = `Takaful calculated by (loan × mortality rate) × tenure (estimated). Amount may vary and some bank got additional deduction.`;
     } else {
       document.getElementById('takafulRemark'+id).innerText = '';
     }
   } else if(type === 'Hire Purchase'){
     bankDeduction = 0.005 * loan;
     serviceFee = 0;
-    cashOnHand = loan - bankDeduction - serviceFee;
+    let cashbackValue = 0;
+    const cbRaw = v('cashback');
+    if(cbRaw > 0){
+      cashbackValue = cbRaw;
+    } else {
+      cashbackValue = 0.1 * loan;
+    }
+    cashOnHand = loan - bankDeduction + cashbackValue;
+    // Update cashback input with default value if empty
+    const cashbackInput = document.getElementById('cashback'+id);
+    if(cashbackInput && !cashbackInput.value){
+      cashbackInput.value = fmt(cashbackValue);
+    }
   } else {
     bankDeduction = 0.015 * loan;
     cashOnHand = loan - bankDeduction - serviceFee;
@@ -431,6 +449,9 @@ function calculate(id){
   const resultsEl = document.getElementById('results'+id);
   let html = '';
   html += `<div><strong>Loan Size:</strong> RM ${fmt(loan)}</div>`;
+  if(type === 'Mortgage' && loan !== effectiveLoan){
+    html += `<div><strong>Effective Loan Size (incl. legal):</strong> RM ${fmt(effectiveLoan)}</div>`;
+  }
   html += `<div><strong>Monthly Payment:</strong> RM ${fmt(monthly)}</div>`;
   html += `<div><strong>Service Fees:</strong> RM ${fmt(serviceFee)}</div>`;
 
@@ -443,28 +464,27 @@ function calculate(id){
                 Legal Fees (Loan): RM ${fmt(legalItems.legalLoan)}
               </div>
             </div>`;
-    const includeFlag = document.getElementById('includeLegal'+id)?.checked ?? true;
-    html += `<div style="margin-top:6px"><label><input id="includeLegalList${id}" type="checkbox" ${includeFlag ? 'checked' : ''} onchange="syncIncludeLegal(${id})"> Include listed legal fees in bank deduction</label></div>`;
+    const includeFlag = document.getElementById('includeLegal'+id)?.checked ?? false;
+    html += `<div style="margin-top:6px"><label><input id="includeLegalList${id}" type="checkbox" ${includeFlag ? 'checked' : ''} onchange="syncIncludeLegal(${id})"> Include legal fees in loan</label></div>`;
   }
 
-  // show cashback mode result if applicable
-  if(type === 'Mortgage'){
-    const cbMode = document.getElementById('cashbackMode'+id)?.value || 'none';
-    const cbRaw = parseNumStr(document.getElementById('cashback'+id)?.value || 0);
-    if(cbMode === 'percent' && cbRaw > 0){
-      const snpVal = v('snp') || loan;
-      const cbAmt = (snpVal || loan) * (cbRaw / 100);
-      html += `<div style="margin-top:6px"><strong>Cashback (${cbRaw}% of SNP):</strong> RM ${fmt(cbAmt)} <div class="muted">Cash on Hand override</div></div>`;
-    } else if(cbMode === 'manual' && cbRaw > 0){
-      html += `<div style="margin-top:6px"><strong>Cashback (Manual):</strong> RM ${fmt(cbRaw)} <div class="muted">Cash on Hand override</div></div>`;
-    }
+  if(type === 'Mortgage' && cashOnHand > 0){
+    html += `<div style="margin-top:6px"><strong>Cashback:</strong> RM ${fmt(cashOnHand)} <div class="muted">${v('cashback') > 0 ? 'Manual input' : 'Based on SNP price'}</div></div>`;
+    html += `<div class="remark">If Below 800k Cash back around 110k. 500k Below Cash Back around 70k. Cash Back Is Estimated, Depends On The Property Price.</div>`;
   }
 
-  if(type === 'Personal Loan' && (takafulAmount > 0)){
+  if(type === 'Personal Loan' && takafulAmount > 0){
     html += `<div style="margin-top:6px"><strong>Takaful:</strong> RM ${fmt(takafulAmount)}</div>`;
   }
   if(type === 'Personal Loan' && advanceAmount > 0){
     html += `<div style="margin-top:6px"><strong>Advance Payment:</strong> RM ${fmt(advanceAmount)}</div>`;
+  }
+
+  if(type === 'Hire Purchase'){
+    const cashback = v('cashback') || (0.1 * loan);
+    html += `<div style="margin-top:6px"><strong>Cashback:</strong> RM ${fmt(cashback)}</div>`;
+    html += `<div class="remark">Cash Back Is Estimated, Depends On The Market Value.</div>`;
+    html += `<div class="remark">Not Yet Include Insurance And Roadtax</div>`;
   }
 
   html += `<div style="margin-top:8px"><strong>Bank Deduction (estimated):</strong> RM ${fmt(bankDeduction)}</div>`;
@@ -524,7 +544,7 @@ function updateSummaryUI(){
     const service = Number(node.dataset.service || 0);
     totalCash += cash;
     totalMonthly += monthly;
-    totalService = service;
+    totalService += service;
 
     html += `<li><a href="#calc${id}" onclick="scrollToCalculator(${id})"><strong>${title}</strong></a><div style="margin-top:6px">${resultsHtml}</div>
              <div style="margin-top:6px"><button style="background:#dc3545;color:#fff;padding:6px;border:none;border-radius:6px" onclick="removeFromSummary(${id})">Delete from Summary</button></div></li>`;
