@@ -21,7 +21,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: BR Logo.jpg;](https://github.com/KenNg-web/KenNg-web.github.io/blob/main/BR%20Logo.jpg)
+    background-image: BR Logo.jpg;(https://github.com/KenNg-web/KenNg-web.github.io/blob/main/BR%20Logo.jpg)
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
