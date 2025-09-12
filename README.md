@@ -21,11 +21,11 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: BR Logo.jpg;(https://github.com/KenNg-web/KenNg-web.github.io/blob/main/BR%20Logo.jpg)
+    background-image: url('BR Logo.jpg');
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    opacity: 0.3;
+    opacity: 0.5;
     z-index: -1;
   }
   h1{color:#003366;margin-top:0}
